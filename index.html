@@ -1,100 +1,71 @@
+<!-- HTML FILE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lyrics Video Generator</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lyrics Video Generator</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>Automatic Lyrics Video Generator</h1>
-        
-        <div class="input-section">
-            <h2>Step 1: Upload Audio</h2>
-            <div class="file-upload" id="drop-area">
-                <p>Drag & drop your audio file here or</p>
-                <label for="audio-upload">Choose File</label>
-                <input type="file" id="audio-upload" accept="audio/*">
-                <p id="file-name"></p>
-            </div>
-            
-            <audio id="audio-player" controls></audio>
-            <div id="error-message">Please upload an audio file first.</div>
-        </div>
-        
-        <div class="input-section">
-            <h2>Step 2: Enter Lyrics (No Timestamps Needed)</h2>
-            <div class="lyrics-input">
-                <textarea id="lyrics-text" placeholder="Enter lyrics here, each line will be shown separately:
-First line of lyrics
-Second line of lyrics
-Third line of lyrics"></textarea>
-                <p class="lyrics-info">Enter each line of lyrics on a new line. The system will automatically time the display based on your audio.</p>
-            </div>
-        </div>
-        
-        <div class="input-section">
-            <h2>Step 3: Customize Appearance</h2>
-            <div class="font-selection">
-                <label for="font-selector">Select Font:</label>
-                <select id="font-selector">
-                    <option value="Arial, sans-serif">Arial</option>
-                    <option value="'Times New Roman', serif">Times New Roman</option>
-                    <option value="'Courier New', monospace">Courier New</option>
-                    <option value="Georgia, serif">Georgia</option>
-                    <option value="Verdana, sans-serif">Verdana</option>
-                    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
-                    <option value="Impact, sans-serif">Impact</option>
-                </select>
-            </div>
-            
-            <div class="animation-selection">
-                <label for="animation-selector">Animation Style:</label>
-                <select id="animation-selector">
-                    <option value="fade">Fade In/Out</option>
-                    <option value="slide">Slide Up</option>
-                    <option value="zoom">Zoom In</option>
-                    <option value="bounce">Bounce</option>
-                </select>
-            </div>
-            
-            <div class="color-selection">
-                <label for="text-color">Text Color:</label>
-                <input type="color" id="text-color" value="#ffffff">
-            </div>
-            
-            <div class="line-duration">
-                <label for="line-duration">Seconds per Line:</label>
-                <input type="number" id="line-duration" min="1" max="10" value="3" step="0.5">
-                <span> seconds</span>
-            </div>
-        </div>
-        
-        <div class="control-buttons">
-            <button id="preview-btn" disabled>Preview</button>
-            <button id="generate-btn" disabled>Generate Video</button>
-        </div>
-        
-        <div class="progress-container" id="progress-container">
-            <div class="progress-bar">
-                <div class="progress" id="progress-bar"></div>
-            </div>
-            <div class="progress-text" id="progress-text">Processing: 0%</div>
-        </div>
-        
-        <div id="preview-container">
-            <h2>Preview</h2>
-            <div id="video-canvas">
-                <div id="lyrics-display"></div>
-            </div>
-        </div>
-        
-        <div id="download-section">
-            <button id="download-btn">Download Video</button>
-            <p>Note: Video generation may take a moment depending on your browser and device.</p>
-        </div>
+  <div class="container">
+    <h1>Lyrics Video Generator</h1>
+
+    <div class="input-section">
+      <h2>Upload Audio</h2>
+      <div class="file-upload" id="upload-box">
+        <input type="file" id="audio-upload" accept="audio/*" />
+        <label for="audio-upload">Choose Audio File</label>
+      </div>
+      <audio id="audio-player" controls></audio>
     </div>
+
+    <div class="input-section lyrics-input">
+      <h2>Enter Lyrics</h2>
+      <textarea id="lyrics-text" placeholder="Enter lyrics here..."></textarea>
+      <div class="lyrics-info">Lyrics will appear over the video canvas.</div>
+    </div>
+
+    <div class="font-selection">
+      <label for="font-selector">Font Style:</label>
+      <select id="font-selector"></select>
+    </div>
+
+    <div class="animation-selection">
+      <label for="animation-selector">Animation:</label>
+      <select id="animation-selector"></select>
+    </div>
+
+    <div class="color-selection">
+      <label>Text Color:</label>
+      <input type="color" id="text-color" value="#ffffff" />
+      <label>Background:</label>
+      <select id="background-type">
+        <option value="black">Black</option>
+        <option value="white">White</option>
+        <option value="custom">Custom</option>
+      </select>
+      <input type="color" id="bg-color-picker" value="#000000" style="display: none;" />
+    </div>
+
+    <div class="line-duration">
+      <label for="line-duration">Line Duration (s):</label>
+      <input type="number" id="line-duration" value="3" min="1" />
+    </div>
+
+    <div class="control-buttons">
+      <button id="generate-btn">Generate Preview</button>
+      <button id="download-btn" disabled>Download Video</button>
+    </div>
+
+    <div id="preview-container">
+      <h2>Preview</h2>
+      <div id="video-canvas">
+        <div id="lyrics-display"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
