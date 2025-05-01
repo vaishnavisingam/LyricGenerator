@@ -1,0 +1,256 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.input-section {
+    margin-bottom: 30px;
+}
+
+.input-section h2 {
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+}
+
+.file-upload.dragover {
+    background-color: #f0f8ff;
+    border-color: #007bff;
+}
+
+.file-upload label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+}
+
+.file-upload label:hover {
+    background-color: #0056b3;
+}
+
+#audio-upload {
+    display: none;
+}
+
+#audio-player {
+    width: 100%;
+    margin-top: 20px;
+    display: none;
+}
+
+.lyrics-input {
+    width: 100%;
+}
+
+#lyrics-text {
+    width: 100%;
+    min-height: 200px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    resize: vertical;
+}
+
+.timestamp-info {
+    margin-top: 10px;
+    color: #666;
+    font-size: 14px;
+}
+
+.control-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+button {
+    padding: 12px 24px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+#generate-btn {
+    background-color: #28a745;
+}
+
+#generate-btn:hover {
+    background-color: #218838;
+}
+
+#preview-container {
+    margin-top: 30px;
+    display: none;
+}
+
+#preview-container h2 {
+    margin-bottom: 15px;
+    color: #444;
+}
+
+#video-canvas {
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%;
+    background-color: black;
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+#lyrics-display {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.lyrics-line {
+    font-size: 32px;
+    font-weight: bold;
+    margin: 10px 0;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.lyrics-line.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.lyrics-line.fade-out {
+    opacity: 0;
+    transform: translateY(-20px);
+}
+
+#download-section {
+    margin-top: 20px;
+    display: none;
+}
+
+#download-section button {
+    background-color: #17a2b8;
+}
+
+#download-section button:hover {
+    background-color: #138496;
+}
+
+.font-selection {
+    margin-top: 20px;
+}
+
+#font-selector {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+.animation-selection {
+    margin-top: 15px;
+}
+
+#animation-selector {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+.color-selection {
+    margin-top: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.color-selection label {
+    margin-right: 10px;
+}
+
+#error-message {
+    color: #dc3545;
+    margin-top: 10px;
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .control-buttons {
+        flex-direction: column;
+    }
+    
+    button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+}
