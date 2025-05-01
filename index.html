@@ -2,12 +2,271 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lyrics Video Generator</title>
-    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .input-section h2 {
+            margin-bottom: 15px;
+            color: #444;
+        }
+        
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .file-upload.dragover {
+            background-color: #f0f8ff;
+            border-color: #007bff;
+        }
+        
+        .file-upload label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .file-upload label:hover {
+            background-color: #0056b3;
+        }
+        
+        #audio-upload {
+            display: none;
+        }
+        
+        #audio-player {
+            width: 100%;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .lyrics-input {
+            width: 100%;
+        }
+        
+        #lyrics-text {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        
+        .timestamp-info {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        #generate-btn {
+            background-color: #28a745;
+        }
+        
+        #generate-btn:hover {
+            background-color: #218838;
+        }
+        
+        #preview-container {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        #preview-container h2 {
+            margin-bottom: 15px;
+            color: #444;
+        }
+        
+        #video-canvas {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            background-color: black;
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        #lyrics-display {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .lyrics-line {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        .lyrics-line.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .lyrics-line.fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        
+        #download-section {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        #download-section button {
+            background-color: #17a2b8;
+        }
+        
+        #download-section button:hover {
+            background-color: #138496;
+        }
+        
+        .font-selection {
+            margin-top: 20px;
+        }
+        
+        #font-selector {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+        
+        .animation-selection {
+            margin-top: 15px;
+        }
+        
+        #animation-selector {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+        
+        .color-selection {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .color-selection label {
+            margin-right: 10px;
+        }
+
+        #error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Automatic Lyrics Video Generator</h1>
+        <h1>Lyrics Video Generator</h1>
         
         <div class="input-section">
             <h2>Step 1: Upload Audio</h2>
@@ -23,13 +282,13 @@
         </div>
         
         <div class="input-section">
-            <h2>Step 2: Enter Lyrics (No Timestamps Needed)</h2>
+            <h2>Step 2: Enter Lyrics with Timestamps</h2>
             <div class="lyrics-input">
-                <textarea id="lyrics-text" placeholder="Enter lyrics here, each line will be shown separately:
-First line of lyrics
-Second line of lyrics
-Third line of lyrics"></textarea>
-                <p class="lyrics-info">Enter each line of lyrics on a new line. The system will automatically time the display based on your audio.</p>
+                <textarea id="lyrics-text" placeholder="Enter lyrics with timestamps in this format:
+[00:05] First line of lyrics
+[00:10] Second line of lyrics
+[00:15] Third line of lyrics"></textarea>
+                <p class="timestamp-info">Format: [MM:SS] or [MM:SS.ms] for each line</p>
             </div>
         </div>
         
@@ -45,6 +304,19 @@ Third line of lyrics"></textarea>
                     <option value="Verdana, sans-serif">Verdana</option>
                     <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
                     <option value="Impact, sans-serif">Impact</option>
+                    <option value="'Comic Sans MS', cursive, sans-serif">Comic Sans MS</option>
+                    <option value="'Lucida Console', monospace">Lucida Console</option>
+                    <option value="'Palatino Linotype', 'Book Antiqua', Palatino, serif">Palatino Linotype</option>
+                    <option value="'Arial Black', Gadget, sans-serif">Arial Black</option>
+                    <option value="'Lucida Sans Unicode', 'Lucida Grande', sans-serif">Lucida Sans Unicode</option>
+                    <option value="'Tahoma', sans-serif">Tahoma</option>
+                    <option value="'Gill Sans', 'Gill Sans MT', Calibri, sans-serif">Gill Sans</option>
+                    <option value="'Century Gothic', sans-serif">Century Gothic</option>
+                    <option value="'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif">Franklin Gothic Medium</option>
+                    <option value="'Candara', sans-serif">Candara</option>
+                    <option value="'Rockwell', serif">Rockwell</option>
+                    <option value="'Consolas', monospace">Consolas</option>
+                    <option value="'Segoe UI', Tahoma, Geneva, Verdana, sans-serif">Segoe UI</option>                    
                 </select>
             </div>
             
@@ -55,6 +327,22 @@ Third line of lyrics"></textarea>
                     <option value="slide">Slide Up</option>
                     <option value="zoom">Zoom In</option>
                     <option value="bounce">Bounce</option>
+                    <option value="shake">Shake</option>
+                    <option value="flip">Flip</option>
+                    <option value="flipX">Flip Horizontal</option>
+                    <option value="flipY">Flip Vertical</option>
+                    <option value="rotate">Rotate</option>
+                    <option value="fadeUp">Fade Up</option>
+                    <option value="fadeDown">Fade Down</option>
+                    <option value="fadeLeft">Fade Left</option>
+                    <option value="fadeRight">Fade Right</option>
+                    <option value="zoomOut">Zoom Out</option>
+                    <option value="slideRight">Slide Right</option>
+                    <option value="slideLeft">Slide Left</option>
+                    <option value="zoomInDown">Zoom In Down</option>
+                    <option value="zoomInUp">Zoom In Up</option>
+                    <option value="rollIn">Roll In</option>
+                    <option value="rollOut">Roll Out</option>
                 </select>
             </div>
             
@@ -62,24 +350,11 @@ Third line of lyrics"></textarea>
                 <label for="text-color">Text Color:</label>
                 <input type="color" id="text-color" value="#ffffff">
             </div>
-            
-            <div class="line-duration">
-                <label for="line-duration">Seconds per Line:</label>
-                <input type="number" id="line-duration" min="1" max="10" value="3" step="0.5">
-                <span> seconds</span>
-            </div>
         </div>
         
         <div class="control-buttons">
             <button id="preview-btn" disabled>Preview</button>
             <button id="generate-btn" disabled>Generate Video</button>
-        </div>
-        
-        <div class="progress-container" id="progress-container">
-            <div class="progress-bar">
-                <div class="progress" id="progress-bar"></div>
-            </div>
-            <div class="progress-text" id="progress-text">Processing: 0%</div>
         </div>
         
         <div id="preview-container">
@@ -94,6 +369,5 @@ Third line of lyrics"></textarea>
             <p>Note: Video generation may take a moment depending on your browser and device.</p>
         </div>
     </div>
-    <script src="script.js"></script>
 </body>
 </html>
