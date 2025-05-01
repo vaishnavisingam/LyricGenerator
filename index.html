@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyrics Video Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        .input-section h2 {
+            margin-bottom: 15px;
+            color: #444;
+        }
+        
+        .file-upload {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .file-upload.dragover {
+            background-color: #f0f8ff;
+            border-color: #007bff;
+        }
+        
+        .file-upload label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .file-upload label:hover {
+            background-color: #0056b3;
+        }
+        
+        #audio-upload {
+            display: none;
+        }
+        
+        #audio-player {
+            width: 100%;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .lyrics-input {
+            width: 100%;
+        }
+        
+        #lyrics-text {
+            width: 100%;
+            min-height: 200px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: vertical;
+        }
+        
+        .timestamp-info {
+            margin-top: 10px;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .control-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0056b3;
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        #generate-btn {
+            background-color: #28a745;
+        }
+        
+        #generate-btn:hover {
+            background-color: #218838;
+        }
+        
+        #preview-container {
+            margin-top: 30px;
+            display: none;
+        }
+        
+        #preview-container h2 {
+            margin-bottom: 15px;
+            color: #444;
+        }
+        
+        #video-canvas {
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            background-color: black;
+            position: relative;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        #lyrics-display {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .lyrics-line {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        
+        .lyrics-line.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .lyrics-line.fade-out {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        
+        #download-section {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        #download-section button {
+            background-color: #17a2b8;
+        }
+        
+        #download-section button:hover {
+            background-color: #138496;
+        }
+        
+        .font-selection {
+            margin-top: 20px;
+        }
+        
+        #font-selector {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+        
+        .animation-selection {
+            margin-top: 15px;
+        }
+        
+        #animation-selector {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-left: 10px;
+            font-size: 16px;
+        }
+        
+        .color-selection {
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .color-selection label {
+            margin-right: 10px;
+        }
+
+        #error-message {
+            color: #dc3545;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lyrics Video Generator</h1>
+        
+        <div class="input-section">
+            <h2>Step 1: Upload Audio</h2>
+            <div class="file-upload" id="drop-area">
+                <p>Drag & drop your audio file here or</p>
+                <label for="audio-upload">Choose File</label>
+                <input type="file" id="audio-upload" accept="audio/*">
+                <p id="file-name"></p>
+            </div>
+            
+            <audio id="audio-player" controls></audio>
+            <div id="error-message">Please upload an audio file first.</div>
+        </div>
+        
+        <div class="input-section">
+            <h2>Step 2: Enter Lyrics with Timestamps</h2>
+            <div class="lyrics-input">
+                <textarea id="lyrics-text" placeholder="Enter lyrics with timestamps in this format:
+[00:05] First line of lyrics
+[00:10] Second line of lyrics
+[00:15] Third line of lyrics"></textarea>
+                <p class="timestamp-info">Format: [MM:SS] or [MM:SS.ms] for each line</p>
+            </div>
+        </div>
+        
+        <div class="input-section">
+            <h2>Step 3: Customize Appearance</h2>
+            <div class="font-selection">
+                <label for="font-selector">Select Font:</label>
+                <select id="font-selector">
+                    <option value="Arial, sans-serif">Arial</option>
+                    <option value="'Times New Roman', serif">Times New Roman</option>
+                    <option value="'Courier New', monospace">Courier New</option>
+                    <option value="Georgia, serif">Georgia</option>
+                    <option value="Verdana, sans-serif">Verdana</option>
+                    <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                    <option value="Impact, sans-serif">Impact</option>
+                </select>
+            </div>
+            
+            <div class="animation-selection">
+                <label for="animation-selector">Animation Style:</label>
+                <select id="animation-selector">
+                    <option value="fade">Fade In/Out</option>
+                    <option value="slide">Slide Up</option>
+                    <option value="zoom">Zoom In</option>
+                    <option value="bounce">Bounce</option>
+                </select>
+            </div>
+            
+            <div class="color-selection">
+                <label for="text-color">Text Color:</label>
+                <input type="color" id="text-color" value="#ffffff">
+            </div>
+        </div>
+        
+        <div class="control-buttons">
+            <button id="preview-btn" disabled>Preview</button>
+            <button id="generate-btn" disabled>Generate Video</button>
+        </div>
+        
+        <div id="preview-container">
+            <h2>Preview</h2>
+            <div id="video-canvas">
+                <div id="lyrics-display"></div>
+            </div>
+        </div>
+        
+        <div id="download-section">
+            <button id="download-btn">Download Video</button>
+            <p>Note: Video generation may take a moment depending on your browser and device.</p>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const dropArea = document.getElementById('drop-area');
+        const audioUpload = document.getElementById('audio-upload');
+        const audioPlayer = document.getElementById('audio-player');
+        const fileName = document.getElementById('file-name');
+        const lyricsText = document.getElementById('lyrics-text');
+        const previewBtn = document.getElementById('preview-btn');
+        const generateBtn = document.getElementById('generate-btn');
+        const previewContainer = document.getElementById('preview-container');
+        const lyricsDisplay = document.getElementById('lyrics-display');
+        const downloadSection = document.getElementById('download-section');
+        const downloadBtn = document.getElementById('download-btn');
+        const fontSelector = document.getElementById('font-selector');
+        const animationSelector = document.getElementById('animation-selector');
+        const textColor = document.getElementById('text-color');
+        const errorMessage = document.getElementById('error-message');
+        
+        // Audio file handling
+        let audioFile = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let lyricsLines = [];
+        
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('dragover');
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('dragover');
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0 && files[0].type.startsWith('audio/')) {
+                handleAudioFile(files[0]);
+            } else {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Please upload an audio file.';
+            }
+        }
+        
+        audioUpload.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                handleAudioFile(this.files[0]);
+            }
+        });
+        
+        function handleAudioFile(file) {
+            audioFile = file;
+            fileName.textContent = file.name;
+            
+            const audioURL = URL.createObjectURL(file);
+            audioPlayer.src = audioURL;
+            audioPlayer.style.display = 'block';
+            
+            previewBtn.disabled = false;
+            generateBtn.disabled = false;
+            errorMessage.style.display = 'none';
+        }
+        
+        // Parse lyrics with timestamps
+        function parseLyrics(lyricsString) {
+            const lines = lyricsString.trim().split('\n');
+            const parsedLines = [];
+            
+            for (const line of lines) {
+                // Match timestamp pattern [MM:SS] or [MM:SS.ms]
+                const match = line.match(/^\[(\d{1,2}):(\d{2})(?:\.(\d{1,3}))?\]\s*(.*)/);
+                
+                if (match) {
+                    const minutes = parseInt(match[1], 10);
+                    const seconds = parseInt(match[2], 10);
+                    const milliseconds = match[3] ? parseInt(match[3], 10) : 0;
+                    
+                    const timestamp = (minutes * 60 + seconds) + (milliseconds / 1000);
+                    const text = match[4].trim();
+                    
+                    if (text) {
+                        parsedLines.push({
+                            timestamp,
+                            text
+                        });
+                    }
+                }
+            }
+            
+            // Sort by timestamp
+            return parsedLines.sort((a, b) => a.timestamp - b.timestamp);
+        }
+        
+        // Preview functionality
+        previewBtn.addEventListener('click', function() {
+            if (!audioFile) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Please upload an audio file first.';
+                return;
+            }
+            
+            lyricsLines = parseLyrics(lyricsText.value);
+            
+            if (lyricsLines.length === 0) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Please enter lyrics with valid timestamps.';
+                return;
+            }
+            
+            // Show preview
+            previewContainer.style.display = 'block';
+            lyricsDisplay.innerHTML = '';
+            
+            // Apply selected font
+            lyricsDisplay.style.fontFamily = fontSelector.value;
+            lyricsDisplay.style.color = textColor.value;
+            
+            // Create lyrics elements
+            lyricsLines.forEach((line, index) => {
+                const lineElement = document.createElement('div');
+                lineElement.className = 'lyrics-line';
+                lineElement.textContent = line.text;
+                lineElement.id = `line-${index}`;
+                lyricsDisplay.appendChild(lineElement);
+            });
+            
+            // Reset audio
+            audioPlayer.currentTime = 0;
+            
+            // Start playback and sync lyrics
+            audioPlayer.play();
+            syncLyrics();
+        });
+        
+        function syncLyrics() {
+            let currentLineIndex = -1;
+            
+            audioPlayer.ontimeupdate = function() {
+                const currentTime = audioPlayer.currentTime;
+                
+                // Find the current line based on timestamp
+                let i = 0;
+                while (i < lyricsLines.length && lyricsLines[i].timestamp <= currentTime) {
+                    i++;
+                }
+                
+                // The current line is the previous one (or none if i=0)
+                const newLineIndex = i > 0 ? i - 1 : -1;
+                
+                // Only update if the line changed
+                if (newLineIndex !== currentLineIndex) {
+                    // Remove active class from previous line
+                    if (currentLineIndex >= 0) {
+                        const prevLine = document.getElementById(`line-${currentLineIndex}`);
+                        if (prevLine) {
+                            if (animationSelector.value === 'fade') {
+                                prevLine.classList.add('fade-out');
+                                prevLine.classList.remove('active');
+                            } else {
+                                prevLine.classList.remove('active');
+                            }
+                        }
+                    }
+                    
+                    // Add active class to new line
+                    if (newLineIndex >= 0) {
+                        const newLine = document.getElementById(`line-${newLineIndex}`);
+                        if (newLine) {
+                            newLine.classList.add('active');
+                            
+                            // Apply different animations based on selection
+                            if (animationSelector.value === 'zoom') {
+                                newLine.style.transform = 'scale(0.5)';
+                                setTimeout(() => {
+                                    newLine.style.transform = 'scale(1)';
+                                }, 50);
+                            } else if (animationSelector.value === 'bounce') {
+                                newLine.style.animation = 'bounce 0.5s';
+                            }
+                        }
+                    }
+                    
+                    currentLineIndex = newLineIndex;
+                }
+            };
+            
+            audioPlayer.onended = function() {
+                // Reset active lines when audio ends
+                document.querySelectorAll('.lyrics-line').forEach(line => {
+                    line.classList.remove('active');
+                    line.classList.remove('fade-out');
+                });
+            };
+        }
+        
+        // Generate video functionality
+        generateBtn.addEventListener('click', async function() {
+            if (!audioFile) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Please upload an audio file first.';
+                return;
+            }
+            
+            lyricsLines = parseLyrics(lyricsText.value);
+            
+            if (lyricsLines.length === 0) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Please enter lyrics with valid timestamps.';
+                return;
+            }
+            
+            // Show preview if not already shown
+            if (previewContainer.style.display !== 'block') {
+                previewBtn.click();
+            }
+            
+            // Start recording the canvas
+            startRecording();
+            
+            // Show download section
+            downloadSection.style.display = 'block';
+        });
+        
+        // Canvas recording
+        async function startRecording() {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size (16:9 aspect ratio)
+            canvas.width = 1280;
+            canvas.height = 720;
+            
+            // Create a stream from the canvas
+            const stream = canvas.captureStream(30); // 30 FPS
+            
+            // Add audio track to the stream
+            const audioContext = new AudioContext();
+            const audioSource = audioContext.createMediaElementSource(audioPlayer);
+            const audioDestination = audioContext.createMediaStreamDestination();
+            audioSource.connect(audioDestination);
+            audioSource.connect(audioContext.destination);
+            
+            stream.getAudioTracks().forEach(track => stream.removeTrack(track));
+            audioDestination.stream.getAudioTracks().forEach(track => stream.addTrack(track));
+            
+            // Create MediaRecorder
+            mediaRecorder = new MediaRecorder(stream, {
+                mimeType: 'video/webm;codecs=vp9',
+                videoBitsPerSecond: 2500000
+            });
+            
+            recordedChunks = [];
+            
+            mediaRecorder.ondataavailable = function(e) {
+                if (e.data.size > 0) {
+                    recordedChunks.push(e.data);
+                }
+            };
+            
+            mediaRecorder.onstop = function() {
+                // Create video blob
+                const blob = new Blob(recordedChunks, {
+                    type: 'video/webm'
+                });
+                
+                // Create download link
+                const url = URL.createObjectURL(blob);
+                downloadBtn.onclick = function() {
+                    const a = document.createElement('a');
+                    const fileName = audioFile.name.replace(/\.[^/.]+$/, '') + '-lyrics.webm';
+                    a.href = url;
+                    a.download = fileName;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                };
+            };
+            
+            // Start recording
+            mediaRecorder.start();
+            
+            // Reset audio
+            audioPlayer.currentTime = 0;
+            
+            // Start drawing frames and playing audio
+            let currentLineIndex = -1;
+            const startTime = performance.now();
+            
+            // Apply selected font and color
+            const selectedFont = fontSelector.value;
+            const selectedColor = textColor.value;
+            const selectedAnimation = animationSelector.value;
+            
+            // Start playback
+            audioPlayer.play();
+            
+            // Animation frame loop
+            function drawFrame() {
+                // Clear canvas
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const currentTime = audioPlayer.currentTime;
+                
+                // Find current line
+                let i = 0;
+                while (i < lyricsLines.length && lyricsLines[i].timestamp <= currentTime) {
+                    i++;
+                }
+                
+                const newLineIndex = i > 0 ? i - 1 : -1;
+                
+                if (newLineIndex >= 0) {
+                    // Calculate how long this line has been displayed
+                    const currentLineStartTime = lyricsLines[newLineIndex].timestamp;
+                    const timeInCurrentLine = currentTime - currentLineStartTime;
+                    
+                    // Next line timestamp (for fade out calculation)
+                    const nextLineTime = newLineIndex < lyricsLines.length - 1 
+                        ? lyricsLines[newLineIndex + 1].timestamp 
+                        : audioPlayer.duration;
+                    
+                    const timeToNextLine = nextLineTime - currentTime;
+                    
+                    // Calculate fade in/out opacity
+                    let opacity = 1;
+                    if (timeInCurrentLine < 0.5) {
+                        // Fade in during first 0.5 seconds
+                        opacity = timeInCurrentLine / 0.5;
+                    } else if (timeToNextLine < 0.5) {
+                        // Fade out during last 0.5 seconds
+                        opacity = timeToNextLine / 0.5;
+                    }
+                    
+                    // Set text properties
+                    ctx.font = '36px ' + selectedFont;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    
+                    // Apply text color with opacity
+                    ctx.fillStyle = hexToRgba(selectedColor, opacity);
+                    
+                    // Get current line text
+                    const text = lyricsLines[newLineIndex].text;
+                    
+                    // Apply different animations
+                    let yOffset = 0;
+                    let scale = 1;
+                    
+                    if (selectedAnimation === 'slide') {
+                        // Slide up animation
+                        yOffset = timeInCurrentLine < 0.5 ? (0.5 - timeInCurrentLine) * 50 : 0;
+                    } else if (selectedAnimation === 'zoom') {
+                        // Zoom in animation
+                        scale = timeInCurrentLine < 0.5 ? 0.5 + timeInCurrentLine : 1;
+                    } else if (selectedAnimation === 'bounce') {
+                        // Bounce animation
+                        if (timeInCurrentLine < 0.5) {
+                            yOffset = Math.sin(timeInCurrentLine * Math.PI * 4) * (0.5 - timeInCurrentLine) * 30;
+                        }
+                    }
+                    
+                    // Apply transform
+                    ctx.save();
+                    ctx.translate(canvas.width / 2, canvas.height / 2 + yOffset);
+                    ctx.scale(scale, scale);
+                    
+                    // Draw text with shadow for better visibility
+                    ctx.shadowColor = 'black';
+                    ctx.shadowBlur = 5;
+                    ctx.shadowOffsetX = 2;
+                    ctx.shadowOffsetY = 2;
+                    
+                    // Draw the text
+                    ctx.fillText(text, 0, 0);
+                    
+                    ctx.restore();
+                }
+                
+                // Continue animation loop if recording
+                if (mediaRecorder.state === 'recording') {
+                    if (!audioPlayer.ended && !audioPlayer.paused) {
+                        requestAnimationFrame(drawFrame);
+                    } else {
+                        // End recording when audio ends
+                        mediaRecorder.stop();
+                    }
+                }
+            }
+            
+            // Start animation loop
+            drawFrame();
+        }
+        
+        // Helper function to convert hex color to rgba
+        function hexToRgba(hex, opacity) {
+            hex = hex.replace('#', '');
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            
+            return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+        }
+        
+        // Add animation styles
+        const styleSheet = document.createElement('style');
+        styleSheet.type = 'text/css';
+        styleSheet.innerHTML = `
+            @keyframes bounce {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-15px); }
+            }
+        `;
+        document.head.appendChild(styleSheet);
+    </script>
+</body>
+</html>
