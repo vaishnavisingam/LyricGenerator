@@ -1,71 +1,90 @@
-<!-- HTML FILE -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lyrics Video Generator</title>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Lyrics Video Generator</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Lyrics Video Generator</h1>
+    <div class="container">
+        <h1>Lyrics Video Generator</h1>
 
-    <div class="input-section">
-      <h2>Upload Audio</h2>
-      <div class="file-upload" id="upload-box">
-        <input type="file" id="audio-upload" accept="audio/*" />
-        <label for="audio-upload">Choose Audio File</label>
-      </div>
-      <audio id="audio-player" controls></audio>
+        <div class="input-section">
+            <h2>Upload Audio</h2>
+            <div class="file-upload" id="file-upload-box">
+                <input type="file" id="audio-upload" accept="audio/*">
+                <label for="audio-upload">Choose Audio File</label>
+                <audio id="audio-player" controls></audio>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <h2>Enter Lyrics</h2>
+            <textarea id="lyrics-text" placeholder="Paste your lyrics here..."></textarea>
+        </div>
+
+        <div class="input-section">
+            <label for="font-selector">Font:</label>
+            <select id="font-selector">
+                <!-- 30 Font Options -->
+                ${[...Array(30)].map((_, i) => `<option value="font${i+1}">Font ${i+1}</option>`).join('')}
+            </select>
+
+            <label for="font-size-selector">Font Size:</label>
+            <select id="font-size-selector">
+                <option value="16px">16px</option>
+                <option value="20px">20px</option>
+                <option value="24px">24px</option>
+                <option value="28px">28px</option>
+                <option value="32px">32px</option>
+                <option value="36px">36px</option>
+                <option value="40px">40px</option>
+            </select>
+
+            <div>
+                <label for="bold-option">Bold Text:</label>
+                <input type="checkbox" id="bold-option">
+            </div>
+
+            <div class="animation-selection">
+                <label for="animation-selector">Animation:</label>
+                <select id="animation-selector">
+                    <!-- 30 Animation Options -->
+                    ${[...Array(30)].map((_, i) => `<option value="anim${i+1}">Animation ${i+1}</option>`).join('')}
+                </select>
+            </div>
+
+            <div class="color-selection">
+                <label for="bg-color">Background Color:</label>
+                <input type="color" id="bg-color" value="#000000">
+
+                <label for="text-color">Text Color:</label>
+                <input type="color" id="text-color" value="#ffffff">
+            </div>
+
+            <div>
+                <label>Video Screen Mode:</label>
+                <label><input type="radio" name="screen-mode" value="black" checked> Black</label>
+                <label><input type="radio" name="screen-mode" value="white"> White</label>
+            </div>
+        </div>
+
+        <div class="control-buttons">
+            <button id="generate-btn">Generate Video</button>
+        </div>
+
+        <div id="preview-container">
+            <h2>Preview</h2>
+            <div id="video-canvas">
+                <div id="lyrics-display"></div>
+            </div>
+        </div>
+
+        <div id="download-section">
+            <button id="download-btn">Download Video</button>
+        </div>
     </div>
 
-    <div class="input-section lyrics-input">
-      <h2>Enter Lyrics</h2>
-      <textarea id="lyrics-text" placeholder="Enter lyrics here..."></textarea>
-      <div class="lyrics-info">Lyrics will appear over the video canvas.</div>
-    </div>
-
-    <div class="font-selection">
-      <label for="font-selector">Font Style:</label>
-      <select id="font-selector"></select>
-    </div>
-
-    <div class="animation-selection">
-      <label for="animation-selector">Animation:</label>
-      <select id="animation-selector"></select>
-    </div>
-
-    <div class="color-selection">
-      <label>Text Color:</label>
-      <input type="color" id="text-color" value="#ffffff" />
-      <label>Background:</label>
-      <select id="background-type">
-        <option value="black">Black</option>
-        <option value="white">White</option>
-        <option value="custom">Custom</option>
-      </select>
-      <input type="color" id="bg-color-picker" value="#000000" style="display: none;" />
-    </div>
-
-    <div class="line-duration">
-      <label for="line-duration">Line Duration (s):</label>
-      <input type="number" id="line-duration" value="3" min="1" />
-    </div>
-
-    <div class="control-buttons">
-      <button id="generate-btn">Generate Preview</button>
-      <button id="download-btn" disabled>Download Video</button>
-    </div>
-
-    <div id="preview-container">
-      <h2>Preview</h2>
-      <div id="video-canvas">
-        <div id="lyrics-display"></div>
-      </div>
-    </div>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
